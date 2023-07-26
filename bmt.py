@@ -27,7 +27,9 @@ def main():
     if not prj_pth.exists():
         prj_pth.mkdir(parents=True)
     hexsha, is_dirty = git_utils.get_repo_info(repo_dir)
-    messagebox.showinfo("hello bmt", f"{hexsha} {is_dirty}")
+    if is_dirty:
+        messagebox.showinfo("hello bmt", f"repo is dirty, bm is not allowed")
+        return
     commit_dir = prj_pth / hexsha
     if not commit_dir.exists():
         commit_dir.mkdir(parents=True)

@@ -19,25 +19,19 @@ def get_repo_info(repo_dir):
 
 def copy_source_file(src_file: Path, repo_dir: Path, prj_dir: Path):
     """
-    保证 copy 的是 unmodified 的源码，目前方案是先 git stash 然后 copy 最后在 git stash pop 回来，
-    但是可能引起 Visual Studio 的重编译。另一种方式是用 repo.index.diff(None)[0].a_path 把修改过的文件
-    copy 到临时目录，然后 git reset 最后 copy 回来
+    只允许 copy 干净的 working tree
     """
     if not src_file.is_relative_to(repo_dir):
         return
     hexsha, is_dirty = get_repo_info(repo_dir)
+    if is_dirty:
+        return
     dst_dir = prj_dir / hexsha
     if not dst_dir.exists():
         dst_dir.mkdir(parents=True)
     dst_file = dst_dir / convert_path(src_file)
     dprint(f"copying {src_file} to {dst_file}")
-    if is_dirty:
-        git_itf = Repo(repo_dir).git
-        git_itf.stash()  # 假设是 blocking 调用
-        shutil.copyfile(src_file, dst_file)
-        git_itf.stash("pop", "stash@{0}")
-    else:  # 不需要多余的 stash
-        shutil.copyfile(src_file, dst_file)
+    shutil.copyfile(src_file, dst_file)
 
 
 if __name__ == "__main__":
