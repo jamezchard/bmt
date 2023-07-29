@@ -1,0 +1,44 @@
+{
+  "repo_root": "D:/bmt",
+  "head_sha": "12fc9baf7b6741927c1ab131e97bd2c5e02d07c7",
+  "transactions": [
+    {
+      "7355608": {
+        "type": "T",
+        "note": "第一步干啥干啥、第二步干啥干啥、第三步干啥干啥...",
+        "children": [
+          {
+            "9527": {
+              "type": "M",
+              "note": "分配一个指针",
+              "pos": "D:/aaa.cpp:100:20"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "3456": {
+        "type": "M",
+        "note": "更不知道干啥",
+        "pos": "D:/aaa.cpp:100:20"
+      }
+    }
+  ],
+  "wild": [
+    {
+      "7903421": {
+        "type": "M",
+        "note": "note 更不知道干啥",
+        "pos": "D:/aaa.cpp:100:20"
+      }
+    },
+    {
+      "7903421": {
+        "type": "M",
+        "note": "note 更不知道干啥",
+        "pos": "D:/aaa.cpp:100:20"
+      }
+    }
+  ]
+}
