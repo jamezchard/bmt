@@ -1,6 +1,9 @@
 repo_root: "D:/bmt"
 head_sha: 12fc9baf7b6741927c1ab131e97bd2c5e02d07c7
-transactions:
+id: 894710234
+type: T
+label: "根节点除了一般节点属性外，还包含全局 meta adta"
+children:
   - id: 7355608
     type: T
     label: "第一步干啥干啥、第二步干啥干啥、第三步干啥干啥..."

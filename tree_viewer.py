@@ -1,49 +1,11 @@
 from dataclasses import dataclass
 from pathlib import Path
 from textual.app import App, ComposeResult
-from textual.widgets import DirectoryTree
-from textual.widgets.tree import TreeNode
-from textual.message import Message
 from pprint import pprint
-from asyncio import Queue
-from rich.style import Style
-from rich.text import Text, TextType
+from book_mark_tree import BookMarkPath, BookMarkTree
+from origin_dirtree import DirectoryTree
 
 import yaml
-
-
-TOGGLE_STYLE = Style.from_meta({"toggle": True})
-
-
-class BookMarkPath:
-    def __init__(self, id: str, type: str, label: str) -> None:
-        self.id = id
-        self.type = type
-        self.label = label
-        self.children = None
-        self.loaded: bool = False
-
-    def iter_child(self) -> "BookMarkPath":
-        if self.children is None:
-            return
-        for child in self.children:
-            yield child
-
-    def __str__(self) -> str:
-        return (
-            f"id {self.id}, type {self.type}, label {self.label}, "
-            f"#children {0 if self.children is None else len(self.children)}"
-        )
-
-
-@dataclass
-class DirEntry:
-    """Attaches directory information to a node."""
-
-    path: Path
-    """The path of the directory entry."""
-    loaded: bool = False
-    """Has this been loaded?"""
 
 
 def construct_book_mark_path(data: object) -> BookMarkPath | list[BookMarkPath]:
@@ -73,28 +35,19 @@ def print_book_mark_path(path: BookMarkPath | list[BookMarkPath], depth):
                     print_book_mark_path(q, depth + 1)
 
 
-class BookMarkTree(DirectoryTree):
-    class MarkSelected(Message):
-        pass
-
-    def __init__(self, path: str | Path) -> None:
-        super().__init__(str(path))
-
 
 class BookMarkTreeApp(App):
     def compose(self) -> ComposeResult:
-        # with open("prj.yaml", mode="r", encoding="utf-8") as yf:
-        #     data = yaml.load(yf, Loader=yaml.Loader)
-        # bmt = construct_book_mark_path(data["transactions"])
-        # yield DirectoryTree("D:/tree-view")
-        yield BookMarkTree("D:/tree-view")
-        # yield BookMarkTree(bmt)
+        with open("prj.yaml", mode="r", encoding="utf-8") as yf:
+            data = yaml.load(yf, Loader=yaml.Loader)
+        bmt = construct_book_mark_path(data)
+        yield BookMarkTree(bmt)
+        # yield DirectoryTree("D:/dynamic-dir")
 
-    # def on_directory_tree_file_selected(self, event: BookMarkTree.MarkSelected) -> None:
-    #     raise RuntimeError("on_directory_tree_file_selected")
+    # def on_book_mark_tree_mark_selected(self, event: BookMarkTree.MarkSelected) -> None:
+    #     raise RuntimeError(event.path.label)
 
 
 if __name__ == "__main__":
-    # print_book_mark_path(bmt, 0)
     app = BookMarkTreeApp()
     app.run()

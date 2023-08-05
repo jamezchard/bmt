@@ -13,7 +13,6 @@ class TreeApp(App):
 
     @classmethod
     def add_yaml(cls, node: TreeNode, yaml_data: object) -> None:
-
         from rich.highlighter import ReprHighlighter
 
         highlighter = ReprHighlighter()
@@ -52,7 +51,7 @@ class TreeApp(App):
         """Load some YAML when the app starts."""
         file_path = Path(__file__).parent / "prj.yaml"
         with open(file_path, mode="r", encoding="utf-8") as data_file:
-            self.yaml_data = yaml.load(data_file, Loader=yaml.Loader)["transactions"]
+            self.yaml_data = yaml.load(data_file, Loader=yaml.Loader)
         tree = self.query_one(Tree)
         tree.show_root = False
         self.action_add()
