@@ -17,6 +17,7 @@ from textual.widgets.tree import TreeNode
 
 TOGGLE_STYLE = Style.from_meta({"toggle": True})
 
+
 @dataclass
 class DirEntry:
     """Attaches directory information to a node."""
@@ -187,9 +188,7 @@ class DirectoryTree(Tree[DirEntry]):
         first_line = text_label.split()[0]
         return first_line
 
-    def render_label(
-        self, node: TreeNode[DirEntry], base_style: Style, style: Style
-    ) -> Text:
+    def render_label(self, node: TreeNode[DirEntry], base_style: Style, style: Style) -> Text:
         """Render a label for the given node.
 
         Args:
@@ -218,15 +217,11 @@ class DirectoryTree(Tree[DirEntry]):
             )
             node_label.highlight_regex(
                 r"\..+$",
-                self.get_component_rich_style(
-                    "directory-tree--extension", partial=True
-                ),
+                self.get_component_rich_style("directory-tree--extension", partial=True),
             )
 
         if node_label.plain.startswith("."):
-            node_label.stylize_before(
-                self.get_component_rich_style("directory-tree--hidden")
-            )
+            node_label.stylize_before(self.get_component_rich_style("directory-tree--hidden"))
 
         text = Text.assemble(prefix, node_label)
         return text
@@ -313,9 +308,7 @@ class DirectoryTree(Tree[DirEntry]):
         """
         assert node.data is not None
         return sorted(
-            self.filter_paths(
-                self._directory_content(node.data.path, get_current_worker())
-            ),
+            self.filter_paths(self._directory_content(node.data.path, get_current_worker())),
             key=lambda path: (not self._safe_is_dir(path), path.name.lower()),
         )
 
@@ -365,4 +358,3 @@ class DirectoryTree(Tree[DirEntry]):
             return
         if not self._safe_is_dir(dir_entry.path):
             self.post_message(self.FileSelected(event.node, dir_entry.path))
-

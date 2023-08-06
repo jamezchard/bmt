@@ -1,4 +1,4 @@
-class test_class():
+class test_class:
     s = "s of class"
 
     def __init__(self) -> None:

@@ -1,0 +1,26 @@
+repo: "D:/bmt"
+sha: 12fc9baf7b6741927c1ab131e97bd2c5e02d07c7
+id: 894710234
+label: 根节点除了一般节点属性外，还包含全局 meta adta
+sub:
+  - id: 7355608
+    label: 第一步干啥干啥、第二步干啥干啥、第三步干啥干啥...
+    sub:
+      - id: 9523
+        label: 分配一个指针
+        sub:
+          - id: 9537 
+            label: 分配一个引用
+          - id: 9537
+            label: 分配一个引用
+          - id: 9537
+            label: 分配一个引用
+          - id: 9527
+            label: 删除资源
+  
+  - id: 9523
+    label: 重新创建
+    sub:
+
+  - id: 3456
+    label: 更不知道干啥

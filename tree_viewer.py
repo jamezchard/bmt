@@ -35,7 +35,6 @@ def print_book_mark_path(path: BookMarkPath | list[BookMarkPath], depth):
                     print_book_mark_path(q, depth + 1)
 
 
-
 class BookMarkTreeApp(App):
     def compose(self) -> ComposeResult:
         with open("prj.yaml", mode="r", encoding="utf-8") as yf:
