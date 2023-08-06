@@ -10,7 +10,8 @@ debug = False
 dprint = lambda x: messagebox.showinfo("debug", x) if debug else None
 
 bmt_root = Path("D:/bmt-prj")
-
+mark_yaml = "mark-table.yaml"
+org_org = "bmt.org"
 
 def open_in_vim():
     line = int(sys.argv[1])
@@ -28,7 +29,7 @@ def get_repo_dir(in_pth: Path):
     in_pth = Path(in_pth)
     cwd = in_pth if in_pth.is_dir() else in_pth.parent
     while True:
-        dprint(cwd)
+        dprint(f"cwd:\n{cwd}")
         if (cwd / ".git").exists():
             return cwd
         elif cwd == cwd.parent:
