@@ -1,2 +1,3 @@
 tk
 gitpython
+shortuuid

@@ -4,16 +4,27 @@
 
 from tkinter import messagebox
 from pathlib import Path
-from utils import get_repo_dir, get_repo_info, bmt_root, convert_path, dprint, mark_yaml, org_org
-from uuid import uuid1
+from utils import (
+    get_repo_dir,
+    get_repo_info,
+    bmt_root,
+    convert_path,
+    dprint,
+    mark_yaml,
+    org_fine_grain,
+    org_coarse_grain,
+)
+
+
+import shortuuid
+import shutil
 
 import sys
 import yaml
 
 
-def main():
-    src_pth = Path(sys.argv[1]).resolve().as_posix()
-    line = int(sys.argv[2])
+def v2bm(src_pth: Path, line: int, label=None) -> None:
+    src_pth = Path(Path(src_pth).resolve().as_posix())
     dprint(f"{src_pth} {line}")
 
     # --------------------------------------------------------------------------------
@@ -22,7 +33,7 @@ def main():
     repo_dir = get_repo_dir(src_pth)
     if not repo_dir:
         # TODO(ckclr): error should always print
-        messagebox.showinfo("hello bmt", "no .git/ found")
+        messagebox.showinfo("hello bmt", f"no .git/ found in {src_pth}'s ancestors")
         return
     hexsha, is_dirty = get_repo_info(repo_dir)
     if is_dirty:
@@ -38,19 +49,20 @@ def main():
 
     table_fn = commit_dir / mark_yaml
     mark_table: dict[str, str] = {}
-    mark_id = str(uuid1())
+    mark_id = str(shortuuid.uuid())
     mark_pos = f"{src_pth},{line}"
     if commit_dir.exists():
         dprint(f"commit_dir exsits:\n{commit_dir}")
         with open(table_fn, mode="r", encoding="utf-8") as table_file:
             mark_table = yaml.load(table_file, Loader=yaml.Loader)
         if mark_table is None:
-            mark_table = {mark_id, mark_pos}
+            mark_table = {mark_id: mark_pos}
         elif mark_pos in mark_table.values():
-            messagebox.showinfo(
-                "hello bmt",
-                f"{mark_pos} already exsits, will not add to {table_fn}",
-            )
+            for k, v in mark_table.items():
+                if v == mark_pos:
+                    mark_id = k
+                    break
+            messagebox.showinfo("hello bmt", f"{mark_pos} already exsits, will use old id")
             mark_id = None
         else:
             mark_table[mark_id] = mark_pos
@@ -61,7 +73,8 @@ def main():
     with open(table_fn, mode="w", encoding="utf-8") as table_file:
         yaml.dump(mark_table, table_file, Dumper=yaml.Dumper)
 
-    org_fn = prj_dir / org_org
+    # use 2 org files, one is for fine grain marks and the other is for coarse grain call stacks
+    org_fn = prj_dir / (org_fine_grain if label is None else org_coarse_grain)
     if org_fn.exists():
         org_file = open(org_fn, mode="a+", encoding="utf-8")
     else:
@@ -69,27 +82,24 @@ def main():
         org_file.write(":PROPERTIES:\n")
         org_file.write(f":REPO:     {repo_dir.resolve().as_posix()}\n")
         org_file.write(f":SHA:      {hexsha}\n")
-        org_file.write(":END:\n")
+        org_file.write(":END:\n\n")
 
-    if mark_id:
-        with open(src_pth, mode="r", encoding="utf-8") as src_file:
-            # TODO(ckclr): check empty label
+    with open(src_pth, mode="r", encoding="utf-8") as src_file:
+        if label is None:
             label = src_file.readlines()[line - 1]
-            label = label.strip()[:50]
-            if len(label) == 0:
-                label = "EMPTY"
-        org_file.write(f"\n* [[elisp:(ckclr/bmt-bm2v)][{label}]]\n")
-        org_file.write(":PROPERTIES:\n")
-        org_file.write(f":ID:     {mark_id}\n")
-        org_file.write(":END:\n")
-    else:
-        messagebox.showinfo("hello bmt", f"{mark_pos} already exsits, will not add to {org_fn}")
+            label = (" ".join(label.strip().split()))[:80]
+
+    org_file.write(f"\n* {label} -- [[elisp:(ckclr/bmt-bm2v)][{mark_id}]]\n\n")
     org_file.close()
 
-    # --------------------------------------------------------------------------------
-    # 3. repo sha 和 org sha 对比，不同时做行号重定位 (mark-table.yaml 中)
-    # --------------------------------------------------------------------------------
-    pass
+    # copy source file as a backup
+    tgt_pth = commit_dir / convert_path(src_pth)
+    if not tgt_pth.exists():
+        shutil.copy(src_pth, tgt_pth)
+
+
+def main():
+    v2bm(Path(sys.argv[1]), int(sys.argv[2]))
 
 
 if __name__ == "__main__":

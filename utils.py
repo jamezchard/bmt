@@ -11,7 +11,9 @@ dprint = lambda x: messagebox.showinfo("debug", x) if debug else None
 
 bmt_root = Path("D:/bmt-prj")
 mark_yaml = "mark-table.yaml"
-org_org = "bmt.org"
+org_fine_grain = "bmt.org"
+org_coarse_grain = "bmt_coarse.org"
+
 
 def open_in_vim():
     line = int(sys.argv[1])

@@ -7,8 +7,9 @@
   (interactive)
   (let ((file-path (buffer-file-name))
 	(repo-sha (org-entry-get 0 "SHA"))
-	(head-id (org-entry-get nil "ID")))
-    (shell-command (concat "python d:/bmt/bmt_bm2v.py " file-path " " repo-sha " " head-id))))
+	(head-line (org-entry-get nil "ITEM")))
+    (message head-line)
+    (shell-command (concat "python d:/bmt/bmt_bm2v.py " file-path " " repo-sha " " "\"" head-line "\""))))
 
 (provide 'bmt)
 ;;; bmt.el ends here
