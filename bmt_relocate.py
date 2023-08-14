@@ -2,6 +2,8 @@ from pathlib import Path
 from utils import get_repo_info
 from tkinter import messagebox
 
+import sys
+
 
 def relocate(org_fn: Path):
     """
@@ -29,10 +31,11 @@ def relocate(org_fn: Path):
         return
 
     # TODO(ckclr):
-    # 1. v2bm 时把 source file 也 copy 过来
-    # 2. 基于某种 diff 算法做匹配
+    # 在 remote 文件中以 local 记录的 line number 为起点向上和向下做文本相似性匹配 (比如 Jaro–Winkler similarity)
+    # 设置一个最大半径和最小分数，在最大半径内没找到高于最小分数的匹配，那就寻找失败，说明这行代码被删了
     pass
+    
 
 
 if __name__ == "__main__":
-    main()
+    relocate(Path(sys.argv[1]))
