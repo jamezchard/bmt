@@ -63,7 +63,6 @@ def v2bm(src_pth: Path, line: int, label=None) -> None:
                     mark_id = k
                     break
             messagebox.showinfo("hello bmt", f"{mark_pos} already exsits, will use old id")
-            mark_id = None
         else:
             mark_table[mark_id] = mark_pos
     else:
