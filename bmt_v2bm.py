@@ -16,9 +16,7 @@ from utils import (
 )
 
 
-import shortuuid
 import shutil
-
 import sys
 import yaml
 
@@ -48,15 +46,17 @@ def v2bm(src_pth: Path, line: int, label=None) -> None:
     dprint(f"prj_dir {prj_dir}\ncommit_dir {commit_dir}")
 
     table_fn = commit_dir / mark_yaml
-    mark_table: dict[str, str] = {}
-    mark_id = str(shortuuid.uuid())
+    mark_table: dict[int | str, int | str] = {}
+    mark_id = 0
     mark_pos = f"{src_pth},{line}"
-    if commit_dir.exists():
+    if commit_dir.exists():  # commit dir 存在就认为 table file 存在
         dprint(f"commit_dir exsits:\n{commit_dir}")
         with open(table_fn, mode="r", encoding="utf-8") as table_file:
             mark_table = yaml.load(table_file, Loader=yaml.Loader)
-        if mark_table is None:
+        if mark_table is None:  # 可能被清空过，是个空文件
+            mark_id = 0
             mark_table = {mark_id: mark_pos}
+            mark_table["max_id"] = mark_id
         elif mark_pos in mark_table.values():
             for k, v in mark_table.items():
                 if v == mark_pos:
@@ -64,11 +64,16 @@ def v2bm(src_pth: Path, line: int, label=None) -> None:
                     break
             messagebox.showinfo("hello bmt", f"{mark_pos} already exsits, will use old id")
         else:
+            mark_id = int(mark_table["max_id"]) + 1
             mark_table[mark_id] = mark_pos
+            mark_table["max_id"] = mark_id
+
     else:
         dprint(f"commit_dir creating:\n{commit_dir}")
         commit_dir.mkdir(parents=True)
-        mark_table[mark_id] = mark_pos
+        mark_id = 0
+        mark_table = {mark_id: mark_pos}
+        mark_table["max_id"] = mark_id
     with open(table_fn, mode="w", encoding="utf-8") as table_file:
         yaml.dump(mark_table, table_file, Dumper=yaml.Dumper)
 
@@ -88,7 +93,7 @@ def v2bm(src_pth: Path, line: int, label=None) -> None:
             label = src_file.readlines()[line - 1]
             label = (" ".join(label.strip().split()))[:80]
 
-    org_file.write(f"\n* {label} -- [[elisp:(ckclr/bmt-bm2v)][{mark_id}]]\n\n")
+    org_file.write(f"\n* [[elisp:(ckclr/bmt-bm2v)][{mark_id:0>8}]] -- {label}\n")
     org_file.close()
 
     # copy source file as a backup
