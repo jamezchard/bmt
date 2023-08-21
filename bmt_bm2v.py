@@ -17,8 +17,11 @@ def open_file_in_devenv(filename, line):
 
 def main():
     prj_dir = Path(sys.argv[1]).parent
-    hexsha = sys.argv[2]
-    mark_id = int(sys.argv[3])
+    mark_id = int(sys.argv[2])
+    cfg_pth = prj_dir / "config.yaml"
+    with open(cfg_pth, mode="r", encoding="utf-8") as cfg_file:
+        prj_cfg = yaml.load(cfg_file, Loader=yaml.Loader)
+    hexsha = prj_cfg["SHA"]
     # messagebox.showinfo("hello-bmt", f"{prj_dir}\n{hexsha}\n{mark_id}")
     with open(prj_dir / hexsha / mark_yaml, mode="r", encoding="utf-8") as table_file:
         mark_table = yaml.load(table_file, Loader=yaml.Loader)
